@@ -47,7 +47,7 @@ export default async function handler(req, res) {
           const isAigc = item['IsAigc'];
           const aigcType = item['aigcLabelType'];
           if (isAigc === true) return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: true, status: 'flagged', reason: 'IsAigc:true' });
-          if (isAigc === false && (!aigcType || aigcType === '0' || aigcType === '1')) {
+         if (isAigc === false && (!aigcType || aigcType === '0')) {
             return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: false, status: 'clean', reason: 'IsAigc:false' });
           }
           if (aigcType && aigcType !== '0') {
