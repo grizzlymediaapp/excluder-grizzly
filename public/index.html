@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excluder — by Grizzly Media</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --amber: #eba238;
+    --amber-dim: rgba(235,162,56,0.12);
+    --amber-border: rgba(235,162,56,0.35);
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0ede8;
+    --muted: #6b6762;
+    --green: #3ecf8e;
+    --green-dim: rgba(62,207,142,0.1);
+    --red: #e55353;
+    --red-dim: rgba(229,83,83,0.1);
+    --yellow-dim: rgba(235,162,56,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+
+  .login-logo .bear {
+    width: 36px;
+    height: 36px;
+    background: var(--amber);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .login-logo .brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .login-logo .product {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .login-box h2 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.4rem;
+  }
+
+  .login-box p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 2rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .field input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus {
+    border-color: var(--amber-border);
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--amber);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: opacity 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #login-error {
+    margin-top: 0.75rem;
+    font-size: 13px;
+    color: var(--red);
+    display: none;
+  }
+
+  /* MAIN APP */
+  #app-screen { display: none; flex: 1; flex-direction: column; }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .topbar-logo .bear {
+    width: 28px;
+    height: 28px;
+    background: var(--amber);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .topbar-logo .name {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .topbar-logo .sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 2px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-sm {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .btn-sm:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+  .btn-sm.amber {
+    color: var(--amber);
+    border-color: var(--amber-border);
+    background: var(--amber-dim);
+  }
+
+  .btn-sm.amber:hover { opacity: 0.85; }
+  .btn-sm:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* MAIN LAYOUT */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    height: calc(100vh - 56px);
+  }
+
+  /* LEFT PANEL */
+  .panel-left {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-section {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-section:last-child { border-bottom: none; }
+
+  .panel-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* TABS */
+  .input-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    background: var(--amber-dim);
+    border-color: var(--amber-border);
+    color: var(--amber);
+  }
+
+  #url-input-area { display: block; }
+  #csv-input-area { display: none; }
+
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+    height: 180px;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: var(--amber-border); }
+  textarea::placeholder { color: var(--muted); }
+
+  .csv-drop {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .csv-drop:hover, .csv-drop.dragover {
+    border-color: var(--amber-border);
+    background: var(--amber-dim);
+  }
+
+  .csv-drop input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .csv-drop .drop-icon { font-size: 28px; margin-bottom: 8px; }
+  .csv-drop .drop-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .csv-drop .drop-sub { font-size: 11px; color: var(--muted); }
+  .csv-drop .drop-file { font-size: 12px; color: var(--amber); margin-top: 8px; font-family: 'Space Mono', monospace; }
+
+  .input-count {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-num.flagged { color: var(--red); }
+  .stat-num.clean { color: var(--green); }
+  .stat-num.total { color: var(--amber); }
+
+  .stat-label { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-top: 1rem; }
+  .progress-bar-bg {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ACTION BUTTONS */
+  .action-row {
+    display: flex;
+    gap: 8px;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  .btn-run {
+    flex: 1;
+    background: var(--amber);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-run:hover { opacity: 0.88; }
+  .btn-run:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-stop {
+    background: var(--red-dim);
+    color: var(--red);
+    border: 1px solid rgba(229,83,83,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.15s;
+  }
+
+  .btn-stop:hover { opacity: 0.8; }
+
+  /* RIGHT PANEL */
+  .panel-right {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .results-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .results-actions { display: flex; gap: 8px; }
+
+  .results-table-wrap {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:hover { background: var(--surface); }
+
+  tbody td {
+    padding: 10px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    vertical-align: middle;
+  }
+
+  td.handle { color: var(--text); font-weight: 700; }
+  td.video-id { color: var(--muted); }
+
+  td.url a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 11px;
+  }
+
+  td.url a:hover { color: var(--amber); }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.04em;
+  }
+
+  .status-badge.flagged { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,83,83,0.25); }
+  .status-badge.clean { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,207,142,0.2); }
+  .status-badge.error { background: var(--yellow-dim); color: var(--amber); border: 1px solid var(--amber-border); }
+  .status-badge.checking { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--muted);
+    gap: 10px;
+  }
+
+  .empty-state .icon { font-size: 40px; opacity: 0.3; }
+  .empty-state .label { font-size: 14px; font-weight: 600; }
+  .empty-state .sub { font-size: 12px; opacity: 0.7; }
+
+  /* FILTER TABS */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .filter-tab {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-tab.active { background: var(--surface2); color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="bear">🐻</div>
+      <div>
+        <div class="brand">Grizzly Media</div>
+        <div class="product">Excluder</div>
+      </div>
+    </div>
+    <h2>Sign in</h2>
+    <p>TikTok AI content detection tool</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div id="login-error">Incorrect username or password</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="bear">🐻</div>
+      <span class="name">Excluder</span>
+      <span class="sub">by Grizzly Media</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-sm amber" id="export-btn" onclick="exportCSV()" disabled>Export CSV</button>
+      <button class="btn-sm" onclick="doLogout()">Log out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="panel-left">
+
+      <!-- INPUT -->
+      <div class="panel-section" style="flex:1;overflow-y:auto;">
+        <div class="panel-label">Input</div>
+
+        <div class="input-tabs">
+          <button class="tab-btn active" id="tab-url" onclick="switchTab('url')">Paste URLs</button>
+          <button class="tab-btn" id="tab-csv" onclick="switchTab('csv')">Upload CSV</button>
+        </div>
+
+        <!-- URL input -->
+        <div id="url-input-area">
+          <textarea id="url-textarea" placeholder="Paste TikTok video URLs here, one per line&#10;&#10;https://www.tiktok.com/@creator/video/123...&#10;https://www.tiktok.com/@creator/video/456..." oninput="updateUrlCount()"></textarea>
+          <div class="input-count" id="url-count">0 URLs detected</div>
+        </div>
+
+        <!-- CSV input -->
+        <div id="csv-input-area">
+          <div class="csv-drop" id="csv-drop">
+            <input type="file" accept=".csv" onchange="handleCSV(this)">
+            <div class="drop-icon">📄</div>
+            <div class="drop-label">Drop CSV file here</div>
+            <div class="drop-sub">or click to browse — needs a column with TikTok URLs</div>
+            <div class="drop-file" id="csv-file-name" style="display:none"></div>
+          </div>
+          <div class="input-count" id="csv-count" style="margin-top:8px">No file loaded</div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="panel-section">
+        <div class="panel-label">Results</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num total" id="stat-total">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num flagged" id="stat-flagged">0</div>
+            <div class="stat-label">AI Flagged</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num clean" id="stat-clean">0</div>
+            <div class="stat-label">Clean</div>
+          </div>
+        </div>
+        <div class="progress-wrap" id="progress-wrap" style="display:none">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-label" id="progress-label">Checking...</div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="action-row">
+        <button class="btn-run" id="run-btn" onclick="startCheck()">Run Check</button>
+        <button class="btn-stop" id="stop-btn" onclick="stopCheck()">Stop</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="panel-right">
+      <div class="results-header">
+        <span class="results-title">Results</span>
+        <div class="results-actions">
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+            <button class="filter-tab" onclick="setFilter('flagged', this)">AI Only</button>
+            <button class="filter-tab" onclick="setFilter('clean', this)">Clean</button>
+            <button class="filter-tab" onclick="setFilter('error', this)">Errors</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-table-wrap">
+        <div class="empty-state" id="empty-state">
+          <div class="icon">🔍</div>
+          <div class="label">No results yet</div>
+          <div class="sub">Paste URLs or upload a CSV, then click Run Check</div>
+        </div>
+        <table id="results-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Handle</th>
+              <th>Video ID</th>
+              <th>Status</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let results = [];
+let pendingUrls = [];
+let csvUrls = [];
+let activeTab = 'url';
+let activeFilter = 'all';
+let isRunning = false;
+let shouldStop = false;
+let authHeader = '';
+
+// ── AUTH ──
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  authHeader = 'Basic ' + btoa(user + ':' + pass);
+
+  fetch('/api/check', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+    body: JSON.stringify({ url: 'https://www.tiktok.com/@test/video/0000000000000000000' })
+  }).then(r => {
+    if (r.status === 401) {
+      document.getElementById('login-error').style.display = 'block';
+      authHeader = '';
+    } else {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'flex';
+    }
+  }).catch(() => {
+    // If network error just try to proceed (offline dev)
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'flex';
+  });
+}
+
+function doLogout() {
+  authHeader = '';
+  results = [];
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  renderTable();
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ── TABS ──
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-url').classList.toggle('active', tab === 'url');
+  document.getElementById('tab-csv').classList.toggle('active', tab === 'csv');
+  document.getElementById('url-input-area').style.display = tab === 'url' ? 'block' : 'none';
+  document.getElementById('csv-input-area').style.display = tab === 'csv' ? 'block' : 'none';
+}
+
+// ── URL PARSING ──
+function parseUrls(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.includes('tiktok.com'));
+  return [...new Set(lines)]; // deduplicate
+}
+
+function updateUrlCount() {
+  const urls = parseUrls(document.getElementById('url-textarea').value);
+  document.getElementById('url-count').textContent = urls.length + ' URL' + (urls.length !== 1 ? 's' : '') + ' detected';
+}
+
+// ── CSV HANDLING ──
+function handleCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('csv-file-name').textContent = file.name;
+  document.getElementById('csv-file-name').style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const urls = [];
+    const lines = text.split('\n');
+    for (const line of lines) {
+      const cells = line.split(',');
+      for (const cell of cells) {
+        const trimmed = cell.replace(/["']/g, '').trim();
+        if (trimmed.includes('tiktok.com') && trimmed.includes('/video/')) {
+          urls.push(trimmed.split('?')[0]);
+        }
+      }
+    }
+    csvUrls = [...new Set(urls)];
+    document.getElementById('csv-count').textContent = csvUrls.length + ' URL' + (csvUrls.length !== 1 ? 's' : '') + ' found in CSV';
+  };
+  reader.readAsText(file);
+}
+
+// Drag and drop
+const drop = document.getElementById('csv-drop');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+drop.addEventListener('drop', e => {
+  e.preventDefault();
+  drop.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.csv')) {
+    const input = drop.querySelector('input');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    handleCSV(input);
+  }
+});
+
+// ── CHECK ──
+async function startCheck() {
+  const urls = activeTab === 'url'
+    ? parseUrls(document.getElementById('url-textarea').value)
+    : csvUrls;
+
+  if (!urls.length) { alert('No valid TikTok URLs found.'); return; }
+
+  results = [];
+  shouldStop = false;
+  isRunning = true;
+
+  document.getElementById('run-btn').style.display = 'none';
+  document.getElementById('stop-btn').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('export-btn').disabled = true;
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('results-table').style.display = 'table';
+
+  updateStats();
+
+  for (let i = 0; i < urls.length; i++) {
+    if (shouldStop) break;
+
+    const url = urls[i].split('?')[0];
+    const vidIdM = url.match(/\/video\/(\d+)/);
+    const handleM = url.match(/tiktok\.com\/@([^/?]+)/);
+    const videoId = vidIdM ? vidIdM[1] : url;
+    const handle = handleM ? '@' + handleM[1] : '—';
+
+    // Add as checking
+    const row = { videoId, handle, url, status: 'checking', reason: '' };
+    results.push(row);
+    renderTable();
+    updateProgress(i, urls.length);
+
+    try {
+      const resp = await fetch('/api/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify({ url })
+      });
+      const data = await resp.json();
+      row.status = data.status || 'error';
+      row.reason = data.reason || '';
+      if (data.handle && data.handle !== '@') row.handle = data.handle;
+    } catch (e) {
+      row.status = 'error';
+      row.reason = 'network error';
+    }
+
+    renderTable();
+    updateStats();
+
+    // Small delay between requests
+    if (i < urls.length - 1 && !shouldStop) {
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  }
+
+  isRunning = false;
+  document.getElementById('run-btn').style.display = 'block';
+  document.getElementById('stop-btn').style.display = 'none';
+  document.getElementById('export-btn').disabled = results.length === 0;
+
+  const pct = Math.round((results.length / urls.length) * 100);
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-label').textContent = shouldStop
+    ? `Stopped at ${results.length} of ${urls.length}`
+    : `Done — ${results.length} checked`;
+}
+
+function stopCheck() {
+  shouldStop = true;
+}
+
+// ── RENDER ──
+function updateProgress(i, total) {
+  const pct = Math.round(((i + 1) / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Checking ${i + 1} of ${total}`;
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = results.length;
+  document.getElementById('stat-flagged').textContent = results.filter(r => r.status === 'flagged').length;
+  document.getElementById('stat-clean').textContent = results.filter(r => r.status === 'clean').length;
+}
+
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('results-body');
+  const filtered = activeFilter === 'all' ? results : results.filter(r => r.status === activeFilter);
+
+  tbody.innerHTML = filtered.map(r => {
+    const badge = r.status === 'flagged'
+      ? '<span class="status-badge flagged">⚠ AI Labeled</span>'
+      : r.status === 'clean'
+      ? '<span class="status-badge clean">✓ Clean</span>'
+      : r.status === 'checking'
+      ? '<span class="status-badge checking">Checking…</span>'
+      : '<span class="status-badge error">! Error</span>';
+
+    const shortUrl = r.url.replace('https://www.tiktok.com', '');
+
+    return `<tr>
+      <td class="handle">${esc(r.handle)}</td>
+      <td class="video-id">${esc(r.videoId)}</td>
+      <td>${badge}</td>
+      <td class="url"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(shortUrl)}</a></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('results-table').style.display = filtered.length ? 'table' : 'none';
+  document.getElementById('empty-state').style.display = filtered.length ? 'none' : (results.length ? 'flex' : 'none');
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── EXPORT ──
+function exportCSV() {
+  const flagged = results.filter(r => r.status === 'flagged');
+  const all = results.filter(r => r.status !== 'checking');
+
+  const rows = [['creator_handle','video_id','video_url','ai_label_found']];
+  all.forEach(r => {
+    rows.push([r.handle, r.videoId, r.url, r.status.toUpperCase()]);
+  });
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `excluder-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+</script>
+</body>
+</html>
