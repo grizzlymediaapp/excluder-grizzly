@@ -662,7 +662,8 @@ function exportXLSX(){
   const fullHeaders=['Handle','Nickname','Verified','Video ID','Status','Previously Cached','Video Post Date','Caption','Hashtags','Views','Likes','Comments','Shares','Music','Duration (s)','AI Label Type','AI Label Raw','URL'];
   const fullRows=results.filter(r=>r.status!=='checking').map(r=>{
     const labelType=r.aigcLabelType==='1'?'Self-labeled (creator disclosed)':r.aigcLabelType==='2'?'Auto-detected (platform labeled)':r.aigcLabelType==='0'?'Not AI':'—';
-    return [r.handle||'',r.nickname||'',r.verified?'Yes':'No',r.videoId||'',r.status||'',r.fromCache?'Yes':'No',r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'',r.desc||'',r.hashtags||'',r.playCount||0,r.diggCount||0,r.commentCount||0,r.shareCount||0,r.musicTitle||'',r.duration||0,labelType,r.aigcLabelType||'',r.url||''];
+    const hashtags = r.hashtags || (r.desc ? (r.desc.match(/#[\w\u00C0-\u024F\u0400-\u04FF]+/g) || []).join(', ') : '');
+    return [r.handle||'',r.nickname||'',r.verified?'Yes':'No',r.videoId||'',r.status||'',r.fromCache?'Yes':'No',r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'',r.desc||'',hashtags,r.playCount||0,r.diggCount||0,r.commentCount||0,r.shareCount||0,r.musicTitle||'',r.duration||0,labelType,r.aigcLabelType||'',r.url||''];
   });
   const ws1=XLSX.utils.aoa_to_sheet([fullHeaders,...fullRows]);
   ws1['!cols']=fullHeaders.map((_,i)=>({wch:[15,15,10,18,10,12,16,40,10,10,10,10,25,12,12,50][i]||15}));
