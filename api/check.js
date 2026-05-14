@@ -49,6 +49,8 @@ export default async function handler(req, res) {
           const aigcType = item['aigcLabelType'];
 
           // Enrich fields
+          const desc = item?.desc || '';
+          const hashtags = (desc.match(/#[\w\u00C0-\u024F\u0400-\u04FF]+/g) || []).join(', ');
           const enriched = {
             videoId,
             url: cleanUrl,
@@ -56,7 +58,8 @@ export default async function handler(req, res) {
             nickname: item?.author?.nickname || '',
             verified: item?.author?.verified || false,
             createTime: item?.createTime || null,
-            desc: item?.desc || '',
+            desc,
+            hashtags,
             playCount: item?.stats?.playCount || 0,
             diggCount: item?.stats?.diggCount || 0,
             commentCount: item?.stats?.commentCount || 0,
