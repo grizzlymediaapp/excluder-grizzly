@@ -37,27 +37,48 @@ export default async function handler(req, res) {
     }
 
     const html = await response.text();
-
     const jsonMatch = html.match(/<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/);
+
     if (jsonMatch) {
       try {
         const data = JSON.parse(jsonMatch[1]);
         const item = data?.['__DEFAULT_SCOPE__']?.['webapp.video-detail']?.['itemInfo']?.['itemStruct'];
+
         if (item) {
           const isAigc = item['IsAigc'];
           const aigcType = item['aigcLabelType'];
-          if (isAigc === true) return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: true, status: 'flagged', reason: 'IsAigc:true' });
-         if (isAigc === false && (!aigcType || aigcType === '0')) {
-            return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: false, status: 'clean', reason: 'IsAigc:false' });
-          }
-          if (aigcType && aigcType !== '0') {
-            return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: true, status: 'flagged', reason: `aigcLabelType:${aigcType}` });
-          }
+
+          // Enrich fields
+          const enriched = {
+            videoId,
+            url: cleanUrl,
+            handle: item?.author?.uniqueId ? '@' + item.author.uniqueId : handle,
+            nickname: item?.author?.nickname || '',
+            verified: item?.author?.verified || false,
+            createTime: item?.createTime || null,
+            desc: item?.desc || '',
+            playCount: item?.stats?.playCount || 0,
+            diggCount: item?.stats?.diggCount || 0,
+            commentCount: item?.stats?.commentCount || 0,
+            shareCount: item?.stats?.shareCount || 0,
+            musicTitle: item?.music?.title || '',
+            duration: item?.video?.duration || 0,
+            aigcLabelType: aigcType || '0',
+          };
+
+          const flagged = isAigc === true || (aigcType && aigcType !== '0');
+          return res.status(200).json({
+            ...enriched,
+            isAi: flagged,
+            status: flagged ? 'flagged' : 'clean',
+            reason: flagged ? `IsAigc:${isAigc} aigcType:${aigcType}` : 'clean',
+          });
         }
       } catch (e) {}
     }
 
-    if (html.includes('"IsAigc":true') || html.includes('"is_aigc":true')) {
+    // Fallback text scan
+    if (html.includes('"IsAigc":true')) {
       return res.status(200).json({ videoId, handle, url: cleanUrl, isAi: true, status: 'flagged', reason: 'text match' });
     }
     if (html.includes('"IsAigc":false')) {
