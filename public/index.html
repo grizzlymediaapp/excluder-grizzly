@@ -313,6 +313,7 @@ textarea::placeholder{color:var(--muted);}
 const CREDS = 'Basic ' + btoa('admin:Astaextr43!');
 const CACHE_KEY = 'excluder_cache_v1';
 const DELAY_MS = 800;
+const VERSION = 'v1.0';
 
 let results = [];
 let activeFilter = 'all';
@@ -337,6 +338,8 @@ function doLogin(){
     document.getElementById('login-error').style.display='none';
     document.getElementById('screen-login').classList.remove('active');
     document.getElementById('screen-input').classList.add('active');
+    document.getElementById('app-footer').style.display='flex';
+    document.body.style.paddingBottom='32px';
     updateCacheNote();
   } else {
     document.getElementById('login-error').style.display='block';
@@ -679,6 +682,14 @@ function exportXLSX(){
   const date=new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb,'excluder-'+date+'.xlsx');
 }
+</script>
+<!-- FOOTER -->
+<div id="app-footer" style="display:none;position:fixed;bottom:0;left:0;right:0;height:32px;background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:100;">
+  <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:0.04em;">Excluder by Grizzly OS &nbsp;·&nbsp; All Rights Reserved © &nbsp;·&nbsp; <span id="footer-version"></span></span>
+</div>
+
+<script>
+document.getElementById('footer-version').textContent = VERSION;
 </script>
 </body>
 </html>
