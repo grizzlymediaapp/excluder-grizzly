@@ -7,157 +7,185 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --teal: #183d46;
-  --teal-mid: #2a5c6a;
-  --teal-light: #e8f0f2;
-  --teal-border: rgba(24,61,70,0.15);
-  --amber: #f7a027;
-  --amber-dim: rgba(247,160,39,0.12);
-  --amber-border: rgba(247,160,39,0.4);
-  --bg: #f5f4f1;
-  --white: #ffffff;
-  --border: #e4e1dc;
-  --text: #1a1a1a;
-  --muted: #8a8680;
-  --green: #1d9e75;
-  --green-dim: rgba(29,158,117,0.1);
-  --red: #d94040;
-  --red-dim: rgba(217,64,64,0.09);
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --teal:#183d46;--teal-mid:#2a5c6a;--teal-light:#e8f0f2;--teal-border:rgba(24,61,70,0.15);
+  --amber:#f7a027;--amber-dim:rgba(247,160,39,0.12);--amber-border:rgba(247,160,39,0.4);
+  --bg:#f5f4f1;--white:#ffffff;--border:#e4e1dc;--text:#1a1a1a;--muted:#8a8680;
+  --green:#1d9e75;--green-dim:rgba(29,158,117,0.1);--red:#d94040;--red-dim:rgba(217,64,64,0.09);
 }
-body { font-family: 'Syne', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); }
+body{font-family:'Syne',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);}
 
-/* ── TOPBAR ── */
-.topbar { display:flex; align-items:center; justify-content:space-between; padding:0 24px; height:52px; background:var(--white); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; }
-.topbar-logo { display:flex; align-items:center; gap:9px; }
-.topbar-logo img { width:26px; height:26px; object-fit:contain; }
-.topbar-brand { font-size:15px; font-weight:800; color:var(--teal); letter-spacing:-0.02em; }
-.topbar-brand span { color:var(--amber); }
-.topbar-nav { display:flex; align-items:center; gap:2px; margin-left:24px; }
-.nav-tab { font-size:12px; font-weight:600; color:var(--muted); padding:5px 13px; border-radius:6px; cursor:pointer; border:none; background:transparent; font-family:'Syne',sans-serif; transition:all 0.15s; }
-.nav-tab:hover:not(:disabled) { color:var(--teal); background:var(--teal-light); }
-.nav-tab.active { color:var(--teal); background:var(--teal-light); }
-.nav-tab:disabled { opacity:0.35; cursor:not-allowed; }
-.topbar-right { display:flex; align-items:center; gap:10px; }
-.btn-export { background:var(--amber); color:var(--teal); border:none; border-radius:7px; padding:7px 14px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:opacity 0.15s; }
-.btn-export:hover { opacity:0.88; }
-.btn-export:disabled { opacity:0.3; cursor:not-allowed; }
-.btn-sm { background:var(--white); border:1px solid var(--border); border-radius:7px; padding:6px 12px; font-family:'Syne',sans-serif; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; }
-.btn-sm:hover { color:var(--teal); border-color:var(--teal-border); }
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;}
+.topbar-logo{display:flex;align-items:center;gap:9px;}
+.topbar-logo img{width:26px;height:26px;object-fit:contain;}
+.topbar-brand{font-size:15px;font-weight:800;color:var(--teal);letter-spacing:-0.02em;}
+.topbar-brand span{color:var(--amber);}
+.topbar-nav{display:flex;align-items:center;gap:2px;margin-left:24px;}
+.nav-tab{font-size:12px;font-weight:600;color:var(--muted);padding:5px 13px;border-radius:6px;cursor:pointer;border:none;background:transparent;font-family:'Syne',sans-serif;transition:all 0.15s;}
+.nav-tab:hover:not(:disabled){color:var(--teal);background:var(--teal-light);}
+.nav-tab.active{color:var(--teal);background:var(--teal-light);}
+.nav-tab:disabled{opacity:0.35;cursor:not-allowed;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn-sm{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;}
+.btn-sm:hover{color:var(--teal);border-color:var(--teal-border);}
 
-/* ── SCREENS ── */
-.screen { display:none; }
-.screen.active { display:flex; }
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:flex;}
 
-/* ── LOGIN ── */
-#screen-login { flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 52px); padding:2rem; }
-.login-box { width:100%; max-width:360px; }
-.login-eyebrow { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-.login-title { font-size:26px; font-weight:800; color:var(--teal); letter-spacing:-0.03em; margin-bottom:6px; }
-.login-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
-.field { margin-bottom:14px; }
-.field label { display:block; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-.field input { width:100%; background:var(--white); border:1px solid var(--border); border-radius:8px; padding:11px 13px; font-family:'Syne',sans-serif; font-size:14px; color:var(--text); outline:none; transition:border-color 0.2s; }
-.field input:focus { border-color:var(--teal); }
-.btn-primary { width:100%; background:var(--teal); color:#fff; border:none; border-radius:8px; padding:13px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; margin-top:6px; transition:opacity 0.15s; }
-.btn-primary:hover { opacity:0.88; }
-#login-error { font-size:12px; color:var(--red); margin-top:10px; display:none; font-weight:600; }
+/* LOGIN */
+#screen-login{flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 52px);padding:2rem;}
+.login-box{width:100%;max-width:360px;}
+.login-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.login-title{font-size:26px;font-weight:800;color:var(--teal);letter-spacing:-0.03em;margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.field input{width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;}
+.field input:focus{border-color:var(--teal);}
+.btn-primary{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;transition:opacity 0.15s;}
+.btn-primary:hover{opacity:0.88;}
+#login-error{font-size:12px;color:var(--red);margin-top:10px;display:none;font-weight:600;}
 
-/* ── INPUT SCREEN ── */
-#screen-input { flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 52px); padding:2rem; }
-.input-card { width:100%; max-width:560px; background:var(--white); border:1px solid var(--border); border-radius:14px; padding:32px; }
-.input-card-title { font-size:18px; font-weight:800; color:var(--teal); letter-spacing:-0.02em; margin-bottom:4px; }
-.input-card-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
-.input-tabs { display:flex; gap:4px; margin-bottom:16px; }
-.input-tab { flex:1; background:transparent; border:1px solid var(--border); border-radius:7px; padding:8px; font-family:'Syne',sans-serif; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.15s; }
-.input-tab.active { background:var(--teal-light); border-color:var(--teal-border); color:var(--teal); }
-#url-area, #csv-area { display:none; }
-#url-area.active, #csv-area.active { display:block; }
-textarea { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:12px; color:var(--text); font-family:'Space Mono',monospace; font-size:12px; line-height:1.7; resize:none; outline:none; height:160px; transition:border-color 0.2s; }
-textarea:focus { border-color:var(--teal); }
-textarea::placeholder { color:var(--muted); }
-.url-count { font-size:11px; color:var(--muted); margin-top:6px; font-family:'Space Mono',monospace; }
-.csv-drop { border:1.5px dashed var(--border); border-radius:8px; padding:28px 16px; text-align:center; cursor:pointer; transition:all 0.2s; position:relative; }
-.csv-drop:hover, .csv-drop.drag { border-color:var(--teal); background:var(--teal-light); }
-.csv-drop input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.csv-drop .drop-icon { font-size:28px; margin-bottom:8px; }
-.csv-drop .drop-label { font-size:13px; font-weight:700; color:var(--teal); margin-bottom:4px; }
-.csv-drop .drop-sub { font-size:11px; color:var(--muted); }
-.csv-file-name { font-size:12px; color:var(--amber); margin-top:8px; font-family:'Space Mono',monospace; display:none; font-weight:700; }
-.csv-count { font-size:11px; color:var(--muted); margin-top:8px; font-family:'Space Mono',monospace; }
-.btn-run { width:100%; background:var(--amber); color:var(--teal); border:none; border-radius:8px; padding:14px; font-family:'Syne',sans-serif; font-size:15px; font-weight:800; cursor:pointer; margin-top:20px; transition:opacity 0.15s; letter-spacing:-0.01em; }
-.btn-run:hover { opacity:0.88; }
-.btn-run:disabled { opacity:0.3; cursor:not-allowed; }
-.cache-note { font-size:11px; color:var(--muted); text-align:center; margin-top:10px; font-family:'Space Mono',monospace; display:none; }
+/* INPUT */
+#screen-input{flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 52px);padding:2rem;}
+.input-card{width:100%;max-width:560px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:32px;}
+.input-card-title{font-size:18px;font-weight:800;color:var(--teal);letter-spacing:-0.02em;margin-bottom:4px;}
+.input-card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.input-tabs{display:flex;gap:4px;margin-bottom:16px;}
+.input-tab{flex:1;background:transparent;border:1px solid var(--border);border-radius:7px;padding:8px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.input-tab.active{background:var(--teal-light);border-color:var(--teal-border);color:var(--teal);}
+#url-area,#csv-area{display:none;}
+#url-area.active,#csv-area.active{display:block;}
+textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;line-height:1.7;resize:none;outline:none;height:160px;transition:border-color 0.2s;}
+textarea:focus{border-color:var(--teal);}
+textarea::placeholder{color:var(--muted);}
+.url-count{font-size:11px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;}
+.csv-drop{border:1.5px dashed var(--border);border-radius:8px;padding:28px 16px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.csv-drop:hover,.csv-drop.drag{border-color:var(--teal);background:var(--teal-light);}
+.csv-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.csv-drop .drop-icon{font-size:28px;margin-bottom:8px;}
+.csv-drop .drop-label{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:4px;}
+.csv-drop .drop-sub{font-size:11px;color:var(--muted);}
+.csv-file-name{font-size:12px;color:var(--amber);margin-top:8px;font-family:'Space Mono',monospace;display:none;font-weight:700;}
+.csv-count{font-size:11px;color:var(--muted);margin-top:8px;font-family:'Space Mono',monospace;}
+.btn-run{width:100%;background:var(--amber);color:var(--teal);border:none;border-radius:8px;padding:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:20px;transition:opacity 0.15s;letter-spacing:-0.01em;}
+.btn-run:hover{opacity:0.88;}
+.btn-run:disabled{opacity:0.3;cursor:not-allowed;}
+.cache-note{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-family:'Space Mono',monospace;display:none;}
 
-/* ── CHECKING SCREEN ── */
-#screen-checking { flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 52px); padding:2rem; }
-.check-card { width:100%; max-width:520px; }
-.check-title { font-size:22px; font-weight:800; color:var(--teal); letter-spacing:-0.03em; margin-bottom:4px; }
-.check-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
-.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-.stat-card { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
-.stat-label { font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-.stat-val { font-size:28px; font-weight:800; letter-spacing:-0.03em; font-family:'Space Mono',monospace; line-height:1; }
-.stat-val.teal { color:var(--teal); }
-.stat-val.amber { color:var(--amber); }
-.stat-val.red { color:var(--red); }
-.stat-val.green { color:var(--green); }
-.stat-sub { font-size:11px; color:var(--muted); margin-top:4px; font-family:'Space Mono',monospace; }
-.progress-section { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
-.progress-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.progress-pct { font-size:13px; font-weight:700; color:var(--teal); font-family:'Space Mono',monospace; }
-.progress-eta { font-size:12px; color:var(--muted); font-family:'Space Mono',monospace; }
-.progress-bg { height:6px; background:var(--teal-light); border-radius:3px; overflow:hidden; }
-.progress-fill { height:100%; background:var(--amber); border-radius:3px; width:0%; transition:width 0.4s ease; }
-.progress-detail { font-size:11px; color:var(--muted); margin-top:8px; font-family:'Space Mono',monospace; }
-.btn-stop { width:100%; background:var(--white); border:1px solid var(--red); color:var(--red); border-radius:8px; padding:12px; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; }
-.btn-stop:hover { background:var(--red-dim); }
-.btn-done-export { width:100%; background:var(--teal); color:#fff; border:none; border-radius:8px; padding:13px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; margin-bottom:10px; display:none; transition:opacity 0.15s; }
-.btn-done-export:hover { opacity:0.88; }
-.btn-view-log { width:100%; background:var(--white); border:1px solid var(--teal-border); color:var(--teal); border-radius:8px; padding:12px; font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; display:none; transition:all 0.15s; }
-.btn-view-log:hover { background:var(--teal-light); }
-.done-note { font-size:11px; color:var(--muted); text-align:center; margin-top:8px; font-family:'Space Mono',monospace; display:none; }
+/* CHECKING */
+#screen-checking{flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 52px);padding:2rem;}
+.check-card{width:100%;max-width:520px;}
+.check-title{font-size:22px;font-weight:800;color:var(--teal);letter-spacing:-0.03em;margin-bottom:4px;}
+.check-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.stat-val{font-size:28px;font-weight:800;letter-spacing:-0.03em;font-family:'Space Mono',monospace;line-height:1;}
+.stat-val.c-teal{color:var(--teal);}
+.stat-val.c-amber{color:var(--amber);}
+.stat-val.c-red{color:var(--red);}
+.stat-val.c-muted{color:var(--muted);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;font-family:'Space Mono',monospace;}
+.progress-section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:16px;}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.progress-pct{font-size:13px;font-weight:700;color:var(--teal);font-family:'Space Mono',monospace;}
+.progress-eta{font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;}
+.progress-bg{height:6px;background:var(--teal-light);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--amber);border-radius:3px;width:0%;transition:width 0.4s ease;}
+.progress-detail{font-size:11px;color:var(--muted);margin-top:8px;font-family:'Space Mono',monospace;}
+.check-actions{display:flex;flex-direction:column;gap:8px;}
+.btn-amber-full{background:var(--amber);color:var(--teal);border:none;border-radius:8px;padding:13px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;transition:opacity 0.15s;display:none;}
+.btn-amber-full:hover{opacity:0.88;}
+.btn-outline-teal{background:var(--white);border:1px solid var(--teal-border);color:var(--teal);border-radius:8px;padding:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;width:100%;transition:all 0.15s;display:none;}
+.btn-outline-teal:hover{background:var(--teal-light);}
+.btn-stop-red{background:var(--white);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:all 0.15s;}
+.btn-stop-red:hover{background:var(--red-dim);}
+.done-note{font-size:11px;color:var(--muted);text-align:center;font-family:'Space Mono',monospace;display:none;}
 
-/* ── LOG SCREEN ── */
-#screen-log { flex-direction:row; height:calc(100vh - 52px); overflow:hidden; }
-.log-left { width:260px; flex-shrink:0; border-right:1px solid var(--border); background:var(--white); display:flex; flex-direction:column; padding:20px 18px; position:sticky; top:0; height:100%; overflow:hidden; }
-.log-left-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
-.log-stat { margin-bottom:12px; }
-.log-stat-label { font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
-.log-stat-val { font-size:22px; font-weight:800; font-family:'Space Mono',monospace; letter-spacing:-0.02em; }
-.log-progress-bg { height:4px; background:var(--teal-light); border-radius:2px; overflow:hidden; margin:14px 0 6px; }
-.log-progress-fill { height:100%; background:var(--amber); border-radius:2px; width:0%; transition:width 0.4s ease; }
-.log-progress-text { font-size:10px; color:var(--muted); font-family:'Space Mono',monospace; }
-.log-divider { border:none; border-top:1px solid var(--border); margin:14px 0; }
-.log-filters { display:flex; flex-direction:column; gap:4px; margin-bottom:14px; }
-.filter-btn { background:transparent; border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-family:'Syne',sans-serif; font-size:11px; font-weight:600; color:var(--muted); cursor:pointer; text-align:left; transition:all 0.15s; }
-.filter-btn.active { background:var(--teal-light); border-color:var(--teal-border); color:var(--teal); }
-.log-export-btn { margin-top:auto; background:var(--amber); color:var(--teal); border:none; border-radius:7px; padding:10px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; width:100%; transition:opacity 0.15s; }
-.log-export-btn:hover { opacity:0.88; }
-.log-export-btn:disabled { opacity:0.3; cursor:not-allowed; }
-.log-right { flex:1; overflow-y:auto; }
-.log-table-header { display:grid; grid-template-columns:140px 140px 110px 120px 1fr; gap:0; background:var(--white); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
-.log-th { padding:10px 14px; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
-.log-row { display:grid; grid-template-columns:140px 140px 110px 120px 1fr; gap:0; border-bottom:1px solid #f0ede8; transition:background 0.1s; }
-.log-row:hover { background:var(--teal-light); }
-.log-td { padding:10px 14px; font-family:'Space Mono',monospace; font-size:11px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center; }
-.log-td a { color:var(--muted); text-decoration:none; font-size:10px; }
-.log-td a:hover { color:var(--teal); }
-.badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700; font-family:'Syne',sans-serif; white-space:nowrap; }
-.badge-flagged { background:var(--red-dim); color:var(--red); border:1px solid rgba(217,64,64,0.2); }
-.badge-clean { background:var(--green-dim); color:var(--green); border:1px solid rgba(29,158,117,0.2); }
-.badge-error { background:var(--amber-dim); color:#8a5a00; border:1px solid var(--amber-border); }
-.badge-checking { background:#f0ede8; color:var(--muted); border:1px solid var(--border); animation:pulse 1.2s infinite; }
-.badge-cached { background:var(--teal-light); color:var(--teal-mid); border:1px solid var(--teal-border); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.empty-log { display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:var(--muted); gap:8px; }
-.empty-log .ei { font-size:36px; opacity:0.2; }
-.empty-log .et { font-size:13px; font-weight:600; }
+/* LOG */
+#screen-log{flex-direction:row;height:calc(100vh - 52px);overflow:hidden;}
+.log-left{width:240px;flex-shrink:0;border-right:1px solid var(--border);background:var(--white);display:flex;flex-direction:column;padding:18px 16px;height:100%;overflow:hidden;}
+.log-left-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.log-stat{margin-bottom:10px;}
+.log-stat-label{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.log-stat-val{font-size:20px;font-weight:800;font-family:'Space Mono',monospace;letter-spacing:-0.02em;}
+.log-progress-bg{height:4px;background:var(--teal-light);border-radius:2px;overflow:hidden;margin:12px 0 4px;}
+.log-progress-fill{height:100%;background:var(--amber);border-radius:2px;width:0%;transition:width 0.4s ease;}
+.log-progress-text{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+.log-eta-text{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:3px;}
+.log-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.log-filters{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.filter-btn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;text-align:left;transition:all 0.15s;}
+.filter-btn.active{background:var(--teal-light);border-color:var(--teal-border);color:var(--teal);}
+.log-bottom-btn{margin-top:auto;width:100%;border-radius:7px;padding:10px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;border:none;}
+.log-bottom-btn.abort{background:var(--red-dim);color:var(--red);border:1px solid rgba(217,64,64,0.3);}
+.log-bottom-btn.abort:hover{opacity:0.8;}
+.log-bottom-btn.export{background:var(--amber);color:var(--teal);}
+.log-bottom-btn.export:hover{opacity:0.88;}
+.log-bottom-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.log-right{flex:1;overflow-y:auto;}
+.log-table-header{display:grid;grid-template-columns:130px 140px 110px 120px 1fr;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.log-th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.log-row{display:grid;grid-template-columns:130px 140px 110px 120px 1fr;border-bottom:1px solid #f0ede8;transition:background 0.1s;}
+.log-row:hover{background:var(--teal-light);}
+.log-td{padding:10px 14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+.log-td a{color:var(--muted);text-decoration:none;font-size:10px;}
+.log-td a:hover{color:var(--teal);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;white-space:nowrap;}
+.badge-flagged{background:var(--red-dim);color:var(--red);border:1px solid rgba(217,64,64,0.2);}
+.badge-clean{background:var(--green-dim);color:var(--green);border:1px solid rgba(29,158,117,0.2);}
+.badge-error{background:var(--amber-dim);color:#8a5a00;border:1px solid var(--amber-border);}
+.badge-checking{background:#f0ede8;color:var(--muted);border:1px solid var(--border);animation:pulse 1.2s infinite;}
+.badge-cached{background:var(--teal-light);color:var(--teal-mid);border:1px solid var(--teal-border);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.empty-log{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;color:var(--muted);gap:8px;}
+.empty-log .ei{font-size:36px;opacity:0.2;}
+.empty-log .et{font-size:13px;font-weight:600;}
+
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:12px;padding:28px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.12);}
+.modal-title{font-size:16px;font-weight:800;color:var(--teal);margin-bottom:8px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+.modal-actions{display:flex;flex-direction:column;gap:8px;}
+.modal-btn{width:100%;border-radius:8px;padding:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;border:none;}
+.modal-btn.primary{background:var(--amber);color:var(--teal);}
+.modal-btn.secondary{background:var(--teal);color:#fff;}
+.modal-btn.ghost{background:var(--white);color:var(--muted);border:1px solid var(--border);}
+.modal-btn:hover{opacity:0.88;}
 </style>
 </head>
 <body>
+
+<!-- NEW CHECK CONFIRMATION MODAL -->
+<div class="modal-overlay" id="new-check-modal">
+  <div class="modal">
+    <div class="modal-title">Start a new check?</div>
+    <div class="modal-sub">You have results from a previous check. Starting a new check will clear them. Do you want to export first?</div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" onclick="modalExportAndRun()">Export XLSX & Start New Check</button>
+      <button class="modal-btn secondary" onclick="modalRunWithout()">Continue Without Exporting</button>
+      <button class="modal-btn ghost" onclick="closeModal('new-check-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABORT CONFIRMATION MODAL -->
+<div class="modal-overlay" id="abort-modal">
+  <div class="modal">
+    <div class="modal-title">Abort check?</div>
+    <div class="modal-sub">The check is still running. Are you sure you want to stop it? Results so far will be kept.</div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" style="background:var(--red);color:#fff;" onclick="confirmAbort()">Yes, Abort Check</button>
+      <button class="modal-btn ghost" onclick="closeModal('abort-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -167,12 +195,11 @@ textarea::placeholder { color:var(--muted); }
       <div class="topbar-brand">Excluder <span>by Grizzly</span></div>
     </div>
     <div class="topbar-nav">
-      <button class="nav-tab active" id="tab-check" onclick="showScreen('input')">Check</button>
+      <button class="nav-tab active" id="tab-check" onclick="onCheckTabClick()">Check</button>
       <button class="nav-tab" id="tab-log" onclick="showScreen('log')" disabled>Log</button>
     </div>
   </div>
   <div class="topbar-right">
-    <button class="btn-export" id="top-export-btn" onclick="exportXLSX()" disabled>Export XLSX</button>
     <button class="btn-sm" onclick="doLogout()">Log out</button>
   </div>
 </div>
@@ -200,7 +227,7 @@ textarea::placeholder { color:var(--muted); }
       <button class="input-tab" id="itab-csv" onclick="switchInputTab('csv')">Upload CSV</button>
     </div>
     <div id="url-area" class="active">
-      <textarea id="url-textarea" placeholder="https://www.tiktok.com/@creator/video/123...&#10;https://www.tiktok.com/@creator/video/456..." oninput="updateUrlCount()"></textarea>
+      <textarea id="url-textarea" placeholder="https://www.tiktok.com/@creator/video/123..." oninput="updateUrlCount()"></textarea>
       <div class="url-count" id="url-count">0 URLs detected</div>
     </div>
     <div id="csv-area">
@@ -208,13 +235,13 @@ textarea::placeholder { color:var(--muted); }
         <input type="file" accept=".csv" onchange="handleCSV(this)">
         <div class="drop-icon">📄</div>
         <div class="drop-label">Drop CSV here or click to browse</div>
-        <div class="drop-sub">Needs a column containing TikTok video URLs</div>
+        <div class="drop-sub">Needs a column with TikTok video URLs</div>
         <div class="csv-file-name" id="csv-file-name"></div>
       </div>
       <div class="csv-count" id="csv-count">No file loaded</div>
     </div>
     <div class="cache-note" id="cache-note"></div>
-    <button class="btn-run" id="run-btn" onclick="startCheck()">Run Check</button>
+    <button class="btn-run" id="run-btn" onclick="onRunClick()">Run Check</button>
   </div>
 </div>
 
@@ -222,12 +249,12 @@ textarea::placeholder { color:var(--muted); }
 <div class="screen" id="screen-checking">
   <div class="check-card">
     <div class="check-title" id="check-title">Checking videos…</div>
-    <div class="check-sub" id="check-sub">Sit tight — results will appear in the Log tab</div>
+    <div class="check-sub" id="check-sub">Results are building up in the Log tab</div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-val teal" id="cs-total">0</div></div>
-      <div class="stat-card"><div class="stat-label">Checked</div><div class="stat-val amber" id="cs-checked">0</div></div>
-      <div class="stat-card"><div class="stat-label">AI Found</div><div class="stat-val red" id="cs-flagged">0</div><div class="stat-sub" id="cs-cached-note"></div></div>
-      <div class="stat-card"><div class="stat-label">Errors</div><div class="stat-val" style="color:var(--muted)" id="cs-errors">0</div></div>
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-val c-teal" id="cs-total">0</div></div>
+      <div class="stat-card"><div class="stat-label">Checked</div><div class="stat-val c-amber" id="cs-checked">0</div></div>
+      <div class="stat-card"><div class="stat-label">AI Found</div><div class="stat-val c-red" id="cs-flagged">0</div><div class="stat-sub" id="cs-cached-note"></div></div>
+      <div class="stat-card"><div class="stat-label">Errors</div><div class="stat-val c-muted" id="cs-errors">0</div></div>
     </div>
     <div class="progress-section">
       <div class="progress-top">
@@ -237,10 +264,12 @@ textarea::placeholder { color:var(--muted); }
       <div class="progress-bg"><div class="progress-fill" id="cs-bar"></div></div>
       <div class="progress-detail" id="cs-detail">Starting…</div>
     </div>
-    <button class="btn-done-export" id="done-export-btn" onclick="exportXLSX()">Export XLSX</button>
-    <button class="btn-view-log" id="view-log-btn" onclick="showScreen('log')">View Log</button>
-    <div class="done-note" id="done-note"></div>
-    <button class="btn-stop" id="stop-btn" onclick="stopCheck()">Stop</button>
+    <div class="check-actions">
+      <button class="btn-amber-full" id="done-export-btn" onclick="exportXLSX()">Export XLSX</button>
+      <button class="btn-outline-teal" id="view-log-btn" onclick="showScreen('log')">View Full Log</button>
+      <div class="done-note" id="done-note"></div>
+      <button class="btn-stop-red" id="stop-btn" onclick="confirmAbortFromCheck()">Stop Check</button>
+    </div>
   </div>
 </div>
 
@@ -253,7 +282,8 @@ textarea::placeholder { color:var(--muted); }
     <div class="log-stat"><div class="log-stat-label">AI Found</div><div class="log-stat-val" style="color:var(--red)" id="ls-flagged">0</div></div>
     <div class="log-stat"><div class="log-stat-label">Errors</div><div class="log-stat-val" style="color:var(--muted)" id="ls-errors">0</div></div>
     <div class="log-progress-bg"><div class="log-progress-fill" id="ls-bar"></div></div>
-    <div class="log-progress-text" id="ls-pct">0%</div>
+    <div class="log-progress-text" id="ls-pct">0% complete</div>
+    <div class="log-eta-text" id="ls-eta"></div>
     <hr class="log-divider">
     <div class="log-filters">
       <button class="filter-btn active" onclick="setFilter('all',this)">All results</button>
@@ -261,7 +291,7 @@ textarea::placeholder { color:var(--muted); }
       <button class="filter-btn" onclick="setFilter('clean',this)">Clean only</button>
       <button class="filter-btn" onclick="setFilter('error',this)">Errors only</button>
     </div>
-    <button class="log-export-btn" id="log-export-btn" onclick="exportXLSX()" disabled>Export XLSX</button>
+    <button class="log-bottom-btn export" id="log-bottom-btn" onclick="onLogBottomBtn()" disabled>Export XLSX</button>
   </div>
   <div class="log-right" id="log-right">
     <div class="log-table-header">
@@ -278,363 +308,342 @@ textarea::placeholder { color:var(--muted); }
 </div>
 
 <script>
-// ── CONSTANTS ──
 const CREDS = 'Basic ' + btoa('admin:Astaextr43!');
 const CACHE_KEY = 'excluder_cache_v1';
 const DELAY_MS = 1200;
 
-// ── STATE ──
 let results = [];
 let activeFilter = 'all';
 let shouldStop = false;
 let isRunning = false;
-let authOk = false;
 let csvUrls = [];
 let activeInputTab = 'url';
-let startTimes = [];
+let checkTimestamps = [];
+let currentEta = '';
+let totalForRun = 0;
 
 // ── CACHE ──
-function getCache() {
-  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch { return {}; }
-}
-function saveToCache(videoId, data) {
-  const cache = getCache();
-  cache[videoId] = data;
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
-}
-function getCached(videoId) {
-  return getCache()[videoId] || null;
-}
+function getCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'{}')}catch{return {}}}
+function saveToCache(id,data){const c=getCache();c[id]=data;try{localStorage.setItem(CACHE_KEY,JSON.stringify(c))}catch{}}
+function getCached(id){return getCache()[id]||null}
 
 // ── AUTH ──
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  if (u === 'admin' && p === 'Astaextr43!') {
-    authOk = true;
-    document.getElementById('login-error').style.display = 'none';
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  if(u==='admin'&&p==='Astaextr43!'){
+    document.getElementById('login-error').style.display='none';
     document.getElementById('screen-login').classList.remove('active');
     document.getElementById('screen-input').classList.add('active');
     updateCacheNote();
   } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('login-pass').value = '';
+    document.getElementById('login-error').style.display='block';
+    document.getElementById('login-pass').value='';
   }
 }
-document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-function doLogout() {
-  authOk = false;
-  results = [];
-  showScreen('login-only');
+function doLogout(){
+  results=[];isRunning=false;shouldStop=true;
+  ['screen-input','screen-checking','screen-log'].forEach(s=>document.getElementById(s).classList.remove('active'));
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('tab-log').disabled=true;
+  setTabActive('check');
 }
 
 // ── SCREENS ──
-function showScreen(name) {
-  ['login','input','checking','log'].forEach(s => {
-    document.getElementById('screen-' + (s==='login'?'login':s)).classList.remove('active');
-  });
-  document.getElementById('screen-login').classList.remove('active');
-  document.getElementById('screen-input').classList.remove('active');
-  document.getElementById('screen-checking').classList.remove('active');
-  document.getElementById('screen-log').classList.remove('active');
+function showScreen(name){
+  ['login','input','checking','log'].forEach(s=>document.getElementById('screen-'+s).classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='log'){setTabActive('log');renderLog();}
+  else if(name==='checking'){setTabActive('check');}
+  else if(name==='input'){setTabActive('check');}
+}
 
-  if (name === 'login-only') {
-    document.getElementById('screen-login').classList.add('active');
-  } else if (name === 'input') {
-    document.getElementById('screen-input').classList.add('active');
-    document.getElementById('tab-check').classList.add('active');
-    document.getElementById('tab-log').classList.remove('active');
-  } else if (name === 'checking') {
-    document.getElementById('screen-checking').classList.add('active');
-    document.getElementById('tab-check').classList.add('active');
-    document.getElementById('tab-log').classList.remove('active');
-  } else if (name === 'log') {
-    document.getElementById('screen-log').classList.add('active');
-    document.getElementById('tab-check').classList.remove('active');
-    document.getElementById('tab-log').classList.add('active');
-    renderLog();
+function setTabActive(tab){
+  document.getElementById('tab-check').classList.toggle('active',tab==='check');
+  document.getElementById('tab-log').classList.toggle('active',tab==='log');
+}
+
+// ── CHECK TAB CLICK ──
+function onCheckTabClick(){
+  if(isRunning){
+    // Go back to live checking screen
+    showScreen('checking');
+  } else if(results.length>0){
+    // Check finished — show checking screen with done state
+    showScreen('checking');
+  } else {
+    showScreen('input');
+  }
+}
+
+// ── RUN CLICK ──
+function onRunClick(){
+  if(results.length>0){
+    openModal('new-check-modal');
+  } else {
+    startCheck();
+  }
+}
+
+// ── MODALS ──
+function openModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+function modalExportAndRun(){
+  closeModal('new-check-modal');
+  exportXLSX();
+  setTimeout(()=>{results=[];startCheck();},300);
+}
+function modalRunWithout(){
+  closeModal('new-check-modal');
+  results=[];
+  startCheck();
+}
+
+function confirmAbortFromCheck(){
+  openModal('abort-modal');
+}
+function confirmAbort(){
+  closeModal('abort-modal');
+  shouldStop=true;
+}
+function onLogBottomBtn(){
+  if(isRunning){
+    openModal('abort-modal');
+  } else {
+    exportXLSX();
   }
 }
 
 // ── INPUT TABS ──
-function switchInputTab(tab) {
-  activeInputTab = tab;
-  document.getElementById('itab-url').classList.toggle('active', tab==='url');
-  document.getElementById('itab-csv').classList.toggle('active', tab==='csv');
-  document.getElementById('url-area').classList.toggle('active', tab==='url');
-  document.getElementById('csv-area').classList.toggle('active', tab==='csv');
+function switchInputTab(tab){
+  activeInputTab=tab;
+  document.getElementById('itab-url').classList.toggle('active',tab==='url');
+  document.getElementById('itab-csv').classList.toggle('active',tab==='csv');
+  document.getElementById('url-area').classList.toggle('active',tab==='url');
+  document.getElementById('csv-area').classList.toggle('active',tab==='csv');
   updateCacheNote();
 }
 
-function parseUrls(text) {
-  return [...new Set(text.split('\n').map(l=>l.trim()).filter(l=>l.includes('tiktok.com') && l.includes('/video/')).map(l=>l.split('?')[0]))];
+function parseUrls(text){
+  return [...new Set(text.split('\n').map(l=>l.trim()).filter(l=>l.includes('tiktok.com')&&l.includes('/video/')).map(l=>l.split('?')[0]))];
 }
-
-function updateUrlCount() {
-  const urls = parseUrls(document.getElementById('url-textarea').value);
-  document.getElementById('url-count').textContent = urls.length + ' URL' + (urls.length!==1?'s':'') + ' detected';
+function updateUrlCount(){
+  const urls=parseUrls(document.getElementById('url-textarea').value);
+  document.getElementById('url-count').textContent=urls.length+' URL'+(urls.length!==1?'s':'')+' detected';
   updateCacheNote();
 }
-
-function handleCSV(input) {
-  const file = input.files[0];
-  if (!file) return;
-  document.getElementById('csv-file-name').textContent = file.name;
-  document.getElementById('csv-file-name').style.display = 'block';
-  const reader = new FileReader();
-  reader.onload = e => {
-    const urls = [];
-    for (const line of e.target.result.split('\n')) {
-      for (const cell of line.split(',')) {
-        const t = cell.replace(/["']/g,'').trim().split('?')[0];
-        if (t.includes('tiktok.com') && t.includes('/video/')) urls.push(t);
+function handleCSV(input){
+  const file=input.files[0];if(!file)return;
+  document.getElementById('csv-file-name').textContent=file.name;
+  document.getElementById('csv-file-name').style.display='block';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const urls=[];
+    for(const line of e.target.result.split('\n')){
+      for(const cell of line.split(',')){
+        const t=cell.replace(/["']/g,'').trim().split('?')[0];
+        if(t.includes('tiktok.com')&&t.includes('/video/'))urls.push(t);
       }
     }
-    csvUrls = [...new Set(urls)];
-    document.getElementById('csv-count').textContent = csvUrls.length + ' URL' + (csvUrls.length!==1?'s':'') + ' found';
+    csvUrls=[...new Set(urls)];
+    document.getElementById('csv-count').textContent=csvUrls.length+' URL'+(csvUrls.length!==1?'s':'')+' found';
     updateCacheNote();
   };
   reader.readAsText(file);
 }
-
-// drag/drop
-const drop = document.getElementById('csv-drop');
-drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
-drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
-drop.addEventListener('drop', e => {
-  e.preventDefault(); drop.classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if (f && f.name.endsWith('.csv')) {
-    const dt = new DataTransfer(); dt.items.add(f);
-    const inp = drop.querySelector('input'); inp.files = dt.files; handleCSV(inp);
-  }
+const drop=document.getElementById('csv-drop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag');});
+drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+drop.addEventListener('drop',e=>{
+  e.preventDefault();drop.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.name.endsWith('.csv')){const dt=new DataTransfer();dt.items.add(f);const inp=drop.querySelector('input');inp.files=dt.files;handleCSV(inp);}
 });
-
-function updateCacheNote() {
-  const urls = activeInputTab === 'url'
-    ? parseUrls(document.getElementById('url-textarea').value)
-    : csvUrls;
-  const cache = getCache();
-  const cached = urls.filter(u => { const m=u.match(/\/video\/(\d+)/); return m && cache[m[1]]; });
-  const note = document.getElementById('cache-note');
-  if (urls.length > 0 && cached.length > 0) {
-    note.textContent = cached.length + ' of ' + urls.length + ' already cached — will skip API calls';
-    note.style.display = 'block';
-  } else {
-    note.style.display = 'none';
-  }
+function updateCacheNote(){
+  const urls=activeInputTab==='url'?parseUrls(document.getElementById('url-textarea').value):csvUrls;
+  const cache=getCache();
+  const cached=urls.filter(u=>{const m=u.match(/\/video\/(\d+)/);return m&&cache[m[1]];});
+  const note=document.getElementById('cache-note');
+  if(urls.length>0&&cached.length>0){note.textContent=cached.length+' of '+urls.length+' already cached — will skip API calls';note.style.display='block';}
+  else{note.style.display='none';}
 }
 
-// ── RUN CHECK ──
-async function startCheck() {
-  const urls = activeInputTab === 'url'
-    ? parseUrls(document.getElementById('url-textarea').value)
-    : csvUrls;
-  if (!urls.length) { alert('No valid TikTok URLs found.'); return; }
+// ── START CHECK ──
+async function startCheck(){
+  const urls=activeInputTab==='url'?parseUrls(document.getElementById('url-textarea').value):csvUrls;
+  if(!urls.length){alert('No valid TikTok URLs found.');return;}
 
-  results = [];
-  shouldStop = false;
-  isRunning = true;
-  startTimes = [];
+  results=[];shouldStop=false;isRunning=true;checkTimestamps=[];totalForRun=urls.length;currentEta='';
 
-  document.getElementById('tab-log').disabled = false;
+  document.getElementById('tab-log').disabled=false;
+  document.getElementById('done-export-btn').style.display='none';
+  document.getElementById('view-log-btn').style.display='none';
+  document.getElementById('done-note').style.display='none';
+  document.getElementById('stop-btn').style.display='block';
+  document.getElementById('check-title').textContent='Checking videos…';
+  document.getElementById('check-sub').textContent='Results are building up in the Log tab';
+
+  // Log bottom btn = Abort while running
+  const lbb=document.getElementById('log-bottom-btn');
+  lbb.textContent='Abort Check';lbb.className='log-bottom-btn abort';lbb.disabled=false;
+
   showScreen('checking');
-  document.getElementById('done-export-btn').style.display = 'none';
-  document.getElementById('view-log-btn').style.display = 'none';
-  document.getElementById('done-note').style.display = 'none';
-  document.getElementById('stop-btn').style.display = 'block';
-  document.getElementById('top-export-btn').disabled = true;
+  updateStats();
 
-  updateCheckStats(0, urls.length);
+  const cache=getCache();
 
-  const cache = getCache();
+  for(let i=0;i<urls.length;i++){
+    if(shouldStop)break;
+    const url=urls[i];
+    const vidIdM=url.match(/\/video\/(\d+)/);
+    const handleM=url.match(/tiktok\.com\/@([^/?]+)/);
+    const videoId=vidIdM?vidIdM[1]:url;
+    const handle=handleM?'@'+handleM[1]:'—';
 
-  for (let i = 0; i < urls.length; i++) {
-    if (shouldStop) break;
-    const url = urls[i];
-    const vidIdM = url.match(/\/video\/(\d+)/);
-    const handleM = url.match(/tiktok\.com\/@([^/?]+)/);
-    const videoId = vidIdM ? vidIdM[1] : url;
-    const handle = handleM ? '@' + handleM[1] : '—';
-
-    // Check cache first
-    const cached = vidIdM ? cache[vidIdM[1]] : null;
-    if (cached) {
-      const row = { ...cached, fromCache: true };
-      results.push(row);
-      updateCheckStats(i+1, urls.length);
+    const cached=vidIdM?cache[vidIdM[1]]:null;
+    if(cached){
+      results.push({...cached,fromCache:true});
+      updateStats();
       continue;
     }
 
-    // Add placeholder
-    const row = { videoId, handle, url, status:'checking', fromCache:false };
+    const row={videoId,handle,url,status:'checking',fromCache:false};
     results.push(row);
-    updateCheckStats(i+1, urls.length, true);
+    updateStats();
 
-    try {
-      const resp = await fetch('/api/check', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':CREDS},
-        body:JSON.stringify({url})
-      });
-      const data = await resp.json();
-      Object.assign(row, data);
-      row.fromCache = false;
-      if (data.status !== 'error') saveToCache(videoId, { ...data, fromCache:false });
-    } catch(e) {
-      row.status = 'error';
-      row.reason = 'network error';
+    try{
+      const resp=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json','Authorization':CREDS},body:JSON.stringify({url})});
+      const data=await resp.json();
+      Object.assign(row,data);row.fromCache=false;
+      if(data.status!=='error')saveToCache(videoId,{...data,fromCache:false});
+    }catch(e){
+      row.status='error';row.reason='network error';
     }
 
-    startTimes.push(Date.now());
-    updateCheckStats(i+1, urls.length);
+    checkTimestamps.push(Date.now());
+    updateStats();
+    if(i<urls.length-1&&!shouldStop)await new Promise(r=>setTimeout(r,DELAY_MS));
+  }
 
-    if (i < urls.length-1 && !shouldStop) {
-      await new Promise(r => setTimeout(r, DELAY_MS));
+  isRunning=false;
+  finishCheck();
+}
+
+function stopCheck(){shouldStop=true;}
+
+function finishCheck(){
+  document.getElementById('stop-btn').style.display='none';
+  document.getElementById('done-export-btn').style.display='block';
+  document.getElementById('view-log-btn').style.display='block';
+  document.getElementById('done-note').style.display='block';
+
+  const done=results.filter(r=>r.status!=='checking').length;
+  const ai=results.filter(r=>r.status==='flagged').length;
+  const cached=results.filter(r=>r.fromCache).length;
+
+  document.getElementById('check-title').textContent=shouldStop?'Check stopped':'Check complete';
+  document.getElementById('check-sub').textContent=done+' videos checked · '+ai+' AI found';
+  document.getElementById('cs-eta').textContent='Done';
+  document.getElementById('cs-bar').style.width='100%';
+  document.getElementById('cs-pct').textContent='100%';
+  document.getElementById('cs-detail').textContent=done+' of '+totalForRun+' checked'+(cached?' · '+cached+' from cache':'');
+  document.getElementById('done-note').textContent=cached?cached+' videos loaded from cache':'';
+  document.getElementById('ls-eta').textContent='Done';
+
+  // Log bottom btn = Export when done
+  const lbb=document.getElementById('log-bottom-btn');
+  lbb.textContent='Export XLSX';lbb.className='log-bottom-btn export';lbb.disabled=false;
+}
+
+// ── STATS UPDATE ──
+function updateStats(){
+  const done=results.filter(r=>r.status!=='checking').length;
+  const ai=results.filter(r=>r.status==='flagged').length;
+  const errors=results.filter(r=>r.status==='error').length;
+  const cached=results.filter(r=>r.fromCache).length;
+  const total=totalForRun;
+  const pct=total>0?Math.round((done/total)*100):0;
+
+  // Checking screen
+  document.getElementById('cs-total').textContent=total;
+  document.getElementById('cs-checked').textContent=done;
+  document.getElementById('cs-flagged').textContent=ai;
+  document.getElementById('cs-errors').textContent=errors;
+  document.getElementById('cs-bar').style.width=pct+'%';
+  document.getElementById('cs-pct').textContent=pct+'%';
+  document.getElementById('cs-detail').textContent=done+' of '+total+' checked'+(cached?' · '+cached+' cached':'');
+  if(cached)document.getElementById('cs-cached-note').textContent=cached+' from cache';
+
+  // ETA calc
+  if(checkTimestamps.length>1){
+    const avg=(checkTimestamps[checkTimestamps.length-1]-checkTimestamps[0])/(checkTimestamps.length-1);
+    const remaining=(total-done)*(avg+DELAY_MS)/1000;
+    if(remaining>3){
+      const m=Math.floor(remaining/60);
+      const s=Math.round(remaining%60);
+      currentEta=(m>0?m+'m ':'')+s+'s remaining';
+    } else {
+      currentEta='Almost done…';
     }
+    document.getElementById('cs-eta').textContent=currentEta;
+    document.getElementById('ls-eta').textContent=currentEta;
   }
 
-  isRunning = false;
-  finishCheck(urls.length);
+  // Log panel
+  document.getElementById('ls-total').textContent=total;
+  document.getElementById('ls-checked').textContent=done;
+  document.getElementById('ls-flagged').textContent=ai;
+  document.getElementById('ls-errors').textContent=errors;
+  document.getElementById('ls-bar').style.width=pct+'%';
+  document.getElementById('ls-pct').textContent=pct+'% complete';
+
+  // Re-render log if visible
+  if(document.getElementById('screen-log').classList.contains('active'))renderLog();
 }
 
-function stopCheck() {
-  shouldStop = true;
-}
-
-function finishCheck(total) {
-  document.getElementById('stop-btn').style.display = 'none';
-  document.getElementById('done-export-btn').style.display = 'block';
-  document.getElementById('view-log-btn').style.display = 'block';
-  document.getElementById('done-note').style.display = 'block';
-  document.getElementById('top-export-btn').disabled = false;
-  document.getElementById('log-export-btn').disabled = false;
-
-  const done = results.filter(r=>r.status!=='checking').length;
-  const ai = results.filter(r=>r.status==='flagged').length;
-  const cached = results.filter(r=>r.fromCache).length;
-
-  document.getElementById('check-title').textContent = shouldStop ? 'Check stopped' : 'Check complete';
-  document.getElementById('check-sub').textContent = done + ' videos checked · ' + ai + ' AI found';
-  document.getElementById('cs-eta').textContent = 'Done';
-  document.getElementById('cs-bar').style.width = '100%';
-  document.getElementById('cs-pct').textContent = '100%';
-  document.getElementById('cs-detail').textContent = done + ' of ' + total + ' checked' + (cached ? ' · ' + cached + ' from cache' : '');
-  document.getElementById('done-note').textContent = cached ? cached + ' videos loaded from cache (skipped API)' : '';
-}
-
-function updateCheckStats(checked, total, isChecking) {
-  const ai = results.filter(r=>r.status==='flagged').length;
-  const errors = results.filter(r=>r.status==='error').length;
-  const done = results.filter(r=>r.status!=='checking').length;
-  const cached = results.filter(r=>r.fromCache).length;
-  const pct = Math.round((done/total)*100);
-
-  document.getElementById('cs-total').textContent = total;
-  document.getElementById('cs-checked').textContent = done;
-  document.getElementById('cs-flagged').textContent = ai;
-  document.getElementById('cs-errors').textContent = errors;
-  document.getElementById('cs-bar').style.width = pct + '%';
-  document.getElementById('cs-pct').textContent = pct + '%';
-  document.getElementById('cs-detail').textContent = done + ' of ' + total + ' checked' + (cached ? ' · ' + cached + ' cached' : '');
-  if (cached) document.getElementById('cs-cached-note').textContent = cached + ' from cache';
-
-  // ETA
-  if (startTimes.length > 1) {
-    const avg = (startTimes[startTimes.length-1] - startTimes[0]) / (startTimes.length-1);
-    const remaining = (total - done) * (avg + DELAY_MS) / 1000;
-    const m = Math.floor(remaining/60);
-    const s = Math.round(remaining%60);
-    document.getElementById('cs-eta').textContent = remaining > 5 ? (m>0?m+'m ':'') + s + 's remaining' : 'Almost done…';
-  }
-
-  // Sync log stats
-  document.getElementById('ls-total').textContent = total;
-  document.getElementById('ls-checked').textContent = done;
-  document.getElementById('ls-flagged').textContent = ai;
-  document.getElementById('ls-errors').textContent = errors;
-  document.getElementById('ls-bar').style.width = pct + '%';
-  document.getElementById('ls-pct').textContent = pct + '% complete';
-}
-
-// ── LOG RENDER ──
-function setFilter(f, btn) {
-  activeFilter = f;
+// ── FILTER & RENDER ──
+function setFilter(f,btn){
+  activeFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderLog();
 }
-
-function renderLog() {
-  const body = document.getElementById('log-body');
-  const filtered = activeFilter === 'all' ? results : results.filter(r=>r.status===activeFilter);
-  if (!filtered.length) {
-    body.innerHTML = '<div class="empty-log"><div class="ei">📋</div><div class="et">No results' + (activeFilter!=='all'?' for this filter':'') + '</div></div>';
+function renderLog(){
+  const body=document.getElementById('log-body');
+  const filtered=activeFilter==='all'?results:results.filter(r=>r.status===activeFilter);
+  if(!filtered.length){
+    body.innerHTML='<div class="empty-log"><div class="ei">📋</div><div class="et">No results'+(activeFilter!=='all'?' for this filter':'')+'</div></div>';
     return;
   }
-  body.innerHTML = filtered.map(r => {
-    const badge = r.status==='flagged'
-      ? '<span class="badge badge-flagged">AI</span>'
-      : r.status==='clean'
-      ? '<span class="badge badge-clean">Clean</span>'
-      : r.status==='checking'
-      ? '<span class="badge badge-checking">…</span>'
-      : '<span class="badge badge-error">Error</span>';
-    const cachedBadge = r.fromCache ? ' <span class="badge badge-cached">cached</span>' : '';
-    const postDate = r.createTime ? new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-    const shortUrl = (r.url||'').replace('https://www.tiktok.com','');
-    return `<div class="log-row">
-      <div class="log-td">${esc(r.handle||'—')}</div>
-      <div class="log-td">${esc(r.videoId||'—')}</div>
-      <div class="log-td">${badge}${cachedBadge}</div>
-      <div class="log-td">${postDate}</div>
-      <div class="log-td"><a href="${esc(r.url||'')}" target="_blank" rel="noopener">${esc(shortUrl)}</a></div>
-    </div>`;
+  body.innerHTML=filtered.map(r=>{
+    const badge=r.status==='flagged'?'<span class="badge badge-flagged">AI</span>':r.status==='clean'?'<span class="badge badge-clean">Clean</span>':r.status==='checking'?'<span class="badge badge-checking">…</span>':'<span class="badge badge-error">Error</span>';
+    const cachedBadge=r.fromCache?' <span class="badge badge-cached">cached</span>':'';
+    const postDate=r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    const shortUrl=(r.url||'').replace('https://www.tiktok.com','');
+    return '<div class="log-row"><div class="log-td">'+esc(r.handle||'—')+'</div><div class="log-td">'+esc(r.videoId||'—')+'</div><div class="log-td">'+badge+cachedBadge+'</div><div class="log-td">'+postDate+'</div><div class="log-td"><a href="'+esc(r.url||'')+'" target="_blank" rel="noopener">'+esc(shortUrl)+'</a></div></div>';
   }).join('');
 }
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ── EXPORT XLSX ──
-function exportXLSX() {
-  if (!results.length) return;
-
-  const wb = XLSX.utils.book_new();
-
-  // TAB 1: Full Report
-  const fullHeaders = ['Handle','Nickname','Verified','Video ID','Status','Previously Cached','Video Post Date','Caption','Views','Likes','Comments','Shares','Music','Duration (s)','AI Label Type','URL'];
-  const fullRows = results.filter(r=>r.status!=='checking').map(r => [
-    r.handle||'',
-    r.nickname||'',
-    r.verified ? 'Yes' : 'No',
-    r.videoId||'',
-    r.status||'',
-    r.fromCache ? 'Yes' : 'No',
-    r.createTime ? new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '',
-    r.desc||'',
-    r.playCount||0,
-    r.diggCount||0,
-    r.commentCount||0,
-    r.shareCount||0,
-    r.musicTitle||'',
-    r.duration||0,
-    r.aigcLabelType||'',
-    r.url||''
-  ]);
-  const ws1 = XLSX.utils.aoa_to_sheet([fullHeaders, ...fullRows]);
-  ws1['!cols'] = fullHeaders.map((_,i) => ({wch: [15,15,10,18,10,12,16,40,10,10,10,10,25,12,12,50][i]||15}));
-  XLSX.utils.book_append_sheet(wb, ws1, 'Full Report');
-
-  // TAB 2: AI Flagged Only
-  const flaggedHeaders = ['Handle','Video ID'];
-  const flaggedRows = results.filter(r=>r.status==='flagged').map(r => [r.handle||'', r.videoId||'']);
-  const ws2 = XLSX.utils.aoa_to_sheet([flaggedHeaders, ...flaggedRows]);
-  ws2['!cols'] = [{wch:20},{wch:22}];
-  XLSX.utils.book_append_sheet(wb, ws2, 'AI Flagged - Exclude List');
-
-  const date = new Date().toISOString().slice(0,10);
-  XLSX.writeFile(wb, `excluder-${date}.xlsx`);
+// ── EXPORT ──
+function exportXLSX(){
+  if(!results.length)return;
+  const wb=XLSX.utils.book_new();
+  const fullHeaders=['Handle','Nickname','Verified','Video ID','Status','Previously Cached','Video Post Date','Caption','Views','Likes','Comments','Shares','Music','Duration (s)','AI Label Type','URL'];
+  const fullRows=results.filter(r=>r.status!=='checking').map(r=>[r.handle||'',r.nickname||'',r.verified?'Yes':'No',r.videoId||'',r.status||'',r.fromCache?'Yes':'No',r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'',r.desc||'',r.playCount||0,r.diggCount||0,r.commentCount||0,r.shareCount||0,r.musicTitle||'',r.duration||0,r.aigcLabelType||'',r.url||'']);
+  const ws1=XLSX.utils.aoa_to_sheet([fullHeaders,...fullRows]);
+  ws1['!cols']=fullHeaders.map((_,i)=>({wch:[15,15,10,18,10,12,16,40,10,10,10,10,25,12,12,50][i]||15}));
+  XLSX.utils.book_append_sheet(wb,ws1,'Full Report');
+  const flaggedHeaders=['Handle','Video ID'];
+  const flaggedRows=results.filter(r=>r.status==='flagged').map(r=>[r.handle||'',r.videoId||'']);
+  const ws2=XLSX.utils.aoa_to_sheet([flaggedHeaders,...flaggedRows]);
+  ws2['!cols']=[{wch:20},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,ws2,'AI Flagged - Exclude List');
+  const date=new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb,'excluder-'+date+'.xlsx');
 }
 </script>
 </body>
