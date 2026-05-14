@@ -310,26 +310,16 @@ function getCached(videoId) {
 function doLogin() {
   const u = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
-  const auth = 'Basic ' + btoa(u + ':' + p);
-  fetch('/api/check', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':auth},
-    body:JSON.stringify({url:'https://www.tiktok.com/@x/video/0000000000000000000'})
-  }).then(r => {
-    if (r.status === 401) {
-      document.getElementById('login-error').style.display = 'block';
-    } else {
-      authOk = true;
-      document.getElementById('screen-login').classList.remove('active');
-      document.getElementById('screen-input').classList.add('active');
-      updateCacheNote();
-    }
-  }).catch(() => {
+  if (u === 'admin' && p === 'Astaextr43!') {
     authOk = true;
+    document.getElementById('login-error').style.display = 'none';
     document.getElementById('screen-login').classList.remove('active');
     document.getElementById('screen-input').classList.add('active');
     updateCacheNote();
-  });
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
 }
 document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
