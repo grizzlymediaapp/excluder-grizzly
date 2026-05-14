@@ -584,13 +584,13 @@ function renderLog() {
     const cachedBadge = r.fromCache ? ' <span class="badge badge-cached">cached</span>' : '';
     const postDate = r.createTime ? new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
     const shortUrl = (r.url||'').replace('https://www.tiktok.com','');
-    return \`<div class="log-row">
-      <div class="log-td">\${esc(r.handle||'—')}</div>
-      <div class="log-td">\${esc(r.videoId||'—')}</div>
-      <div class="log-td">\${badge}\${cachedBadge}</div>
-      <div class="log-td">\${postDate}</div>
-      <div class="log-td"><a href="\${esc(r.url||'')}" target="_blank" rel="noopener">\${esc(shortUrl)}</a></div>
-    </div>\`;
+    return `<div class="log-row">
+      <div class="log-td">${esc(r.handle||'—')}</div>
+      <div class="log-td">${esc(r.videoId||'—')}</div>
+      <div class="log-td">${badge}${cachedBadge}</div>
+      <div class="log-td">${postDate}</div>
+      <div class="log-td"><a href="${esc(r.url||'')}" target="_blank" rel="noopener">${esc(shortUrl)}</a></div>
+    </div>`;
   }).join('');
 }
 
@@ -634,7 +634,7 @@ function exportXLSX() {
   XLSX.utils.book_append_sheet(wb, ws2, 'AI Flagged - Exclude List');
 
   const date = new Date().toISOString().slice(0,10);
-  XLSX.writeFile(wb, \`excluder-\${date}.xlsx\`);
+  XLSX.writeFile(wb, `excluder-${date}.xlsx`);
 }
 </script>
 </body>
