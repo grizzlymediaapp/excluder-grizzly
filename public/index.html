@@ -128,9 +128,9 @@ textarea::placeholder{color:var(--muted);}
 .log-bottom-btn.export:hover{opacity:0.88;}
 .log-bottom-btn:disabled{opacity:0.3;cursor:not-allowed;}
 .log-right{flex:1;overflow-y:auto;}
-.log-table-header{display:grid;grid-template-columns:130px 140px 110px 120px 1fr;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.log-table-header{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
 .log-th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
-.log-row{display:grid;grid-template-columns:130px 140px 110px 120px 1fr;border-bottom:1px solid #f0ede8;transition:background 0.1s;}
+.log-row{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr;border-bottom:1px solid #f0ede8;transition:background 0.1s;}
 .log-row:hover{background:var(--teal-light);}
 .log-td{padding:10px 14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px;}
 .log-td a{color:var(--muted);text-decoration:none;font-size:10px;}
@@ -298,6 +298,7 @@ textarea::placeholder{color:var(--muted);}
       <div class="log-th">Handle</div>
       <div class="log-th">Video ID</div>
       <div class="log-th">Status</div>
+      <div class="log-th">AI Label Type</div>
       <div class="log-th">Post Date</div>
       <div class="log-th">URL</div>
     </div>
@@ -622,8 +623,9 @@ function renderLog(){
     const badge=r.status==='flagged'?'<span class="badge badge-flagged">AI</span>':r.status==='clean'?'<span class="badge badge-clean">Clean</span>':r.status==='checking'?'<span class="badge badge-checking">…</span>':'<span class="badge badge-error">Error</span>';
     const cachedBadge=r.fromCache?' <span class="badge badge-cached">cached</span>':'';
     const postDate=r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    const labelType=r.aigcLabelType==='1'?'Self-labeled':r.aigcLabelType==='2'?'Auto-detected':r.aigcLabelType==='0'?'—':'—';
     const shortUrl=(r.url||'').replace('https://www.tiktok.com','');
-    return '<div class="log-row"><div class="log-td">'+esc(r.handle||'—')+'</div><div class="log-td">'+esc(r.videoId||'—')+'</div><div class="log-td">'+badge+cachedBadge+'</div><div class="log-td">'+postDate+'</div><div class="log-td"><a href="'+esc(r.url||'')+'" target="_blank" rel="noopener">'+esc(shortUrl)+'</a></div></div>';
+    return '<div class="log-row"><div class="log-td">'+esc(r.handle||'—')+'</div><div class="log-td">'+esc(r.videoId||'—')+'</div><div class="log-td">'+badge+cachedBadge+'</div><div class="log-td" style="font-size:10px;">'+labelType+'</div><div class="log-td">'+postDate+'</div><div class="log-td"><a href="'+esc(r.url||'')+'" target="_blank" rel="noopener">'+esc(shortUrl)+'</a></div></div>';
   }).join('');
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -632,8 +634,11 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function exportXLSX(){
   if(!results.length)return;
   const wb=XLSX.utils.book_new();
-  const fullHeaders=['Handle','Nickname','Verified','Video ID','Status','Previously Cached','Video Post Date','Caption','Views','Likes','Comments','Shares','Music','Duration (s)','AI Label Type','URL'];
-  const fullRows=results.filter(r=>r.status!=='checking').map(r=>[r.handle||'',r.nickname||'',r.verified?'Yes':'No',r.videoId||'',r.status||'',r.fromCache?'Yes':'No',r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'',r.desc||'',r.playCount||0,r.diggCount||0,r.commentCount||0,r.shareCount||0,r.musicTitle||'',r.duration||0,r.aigcLabelType||'',r.url||'']);
+  const fullHeaders=['Handle','Nickname','Verified','Video ID','Status','Previously Cached','Video Post Date','Caption','Views','Likes','Comments','Shares','Music','Duration (s)','AI Label Type','AI Label Raw','URL'];
+  const fullRows=results.filter(r=>r.status!=='checking').map(r=>{
+    const labelType=r.aigcLabelType==='1'?'Self-labeled (creator disclosed)':r.aigcLabelType==='2'?'Auto-detected (platform labeled)':r.aigcLabelType==='0'?'Not AI':'—';
+    return [r.handle||'',r.nickname||'',r.verified?'Yes':'No',r.videoId||'',r.status||'',r.fromCache?'Yes':'No',r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'',r.desc||'',r.playCount||0,r.diggCount||0,r.commentCount||0,r.shareCount||0,r.musicTitle||'',r.duration||0,labelType,r.aigcLabelType||'',r.url||''];
+  });
   const ws1=XLSX.utils.aoa_to_sheet([fullHeaders,...fullRows]);
   ws1['!cols']=fullHeaders.map((_,i)=>({wch:[15,15,10,18,10,12,16,40,10,10,10,10,25,12,12,50][i]||15}));
   XLSX.utils.book_append_sheet(wb,ws1,'Full Report');
