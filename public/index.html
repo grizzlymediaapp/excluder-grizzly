@@ -128,9 +128,9 @@ textarea::placeholder{color:var(--muted);}
 .log-bottom-btn.export:hover{opacity:0.88;}
 .log-bottom-btn:disabled{opacity:0.3;cursor:not-allowed;}
 .log-right{flex:1;overflow-y:auto;}
-.log-table-header{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.log-table-header{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr 80px;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
 .log-th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
-.log-row{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr;border-bottom:1px solid #f0ede8;transition:background 0.1s;}
+.log-row{display:grid;grid-template-columns:130px 140px 100px 130px 110px 1fr 80px;border-bottom:1px solid #f0ede8;transition:background 0.1s;}
 .log-row:hover{background:var(--teal-light);}
 .log-td{padding:10px 14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px;}
 .log-td a{color:var(--muted);text-decoration:none;font-size:10px;}
@@ -232,9 +232,9 @@ textarea::placeholder{color:var(--muted);}
     </div>
     <div id="csv-area">
       <div class="csv-drop" id="csv-drop">
-        <input type="file" accept=".csv" onchange="handleCSV(this)">
+        <input type="file" accept=".csv,.xlsx,.xls" onchange="handleCSV(this)">
         <div class="drop-icon">📄</div>
-        <div class="drop-label">Drop CSV here or click to browse</div>
+        <div class="drop-label">Drop CSV or XLSX here or click to browse</div>
         <div class="drop-sub">Needs a column with TikTok video URLs</div>
         <div class="csv-file-name" id="csv-file-name"></div>
       </div>
@@ -301,6 +301,7 @@ textarea::placeholder{color:var(--muted);}
       <div class="log-th">AI Label Type</div>
       <div class="log-th">Post Date</div>
       <div class="log-th">URL</div>
+      <div class="log-th">Cached</div>
     </div>
     <div id="log-body">
       <div class="empty-log"><div class="ei">📋</div><div class="et">No results yet</div></div>
@@ -440,20 +441,44 @@ function handleCSV(input){
   const file=input.files[0];if(!file)return;
   document.getElementById('csv-file-name').textContent=file.name;
   document.getElementById('csv-file-name').style.display='block';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const urls=[];
-    for(const line of e.target.result.split('\n')){
-      for(const cell of line.split(',')){
-        const t=cell.replace(/["']/g,'').trim().split('?')[0];
-        if(t.includes('tiktok.com')&&t.includes('/video/'))urls.push(t);
+  const isXlsx=file.name.endsWith('.xlsx')||file.name.endsWith('.xls');
+  if(isXlsx){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array'});
+        const urls=[];
+        for(const sheetName of wb.SheetNames){
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});
+          for(const row of rows){
+            for(const cell of row){
+              const t=String(cell||'').trim().split('?')[0];
+              if(t.includes('tiktok.com')&&t.includes('/video/'))urls.push(t);
+            }
+          }
+        }
+        csvUrls=[...new Set(urls)];
+        document.getElementById('csv-count').textContent=csvUrls.length+' URL'+(csvUrls.length!==1?'s':'')+' found';
+        updateCacheNote();
+      }catch(err){document.getElementById('csv-count').textContent='Error reading XLSX file';}
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const urls=[];
+      for(const line of e.target.result.split('\n')){
+        for(const cell of line.split(',')){
+          const t=cell.replace(/["']/g,'').trim().split('?')[0];
+          if(t.includes('tiktok.com')&&t.includes('/video/'))urls.push(t);
+        }
       }
-    }
-    csvUrls=[...new Set(urls)];
-    document.getElementById('csv-count').textContent=csvUrls.length+' URL'+(csvUrls.length!==1?'s':'')+' found';
-    updateCacheNote();
-  };
-  reader.readAsText(file);
+      csvUrls=[...new Set(urls)];
+      document.getElementById('csv-count').textContent=csvUrls.length+' URL'+(csvUrls.length!==1?'s':'')+' found';
+      updateCacheNote();
+    };
+    reader.readAsText(file);
+  }
 }
 const drop=document.getElementById('csv-drop');
 drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag');});
@@ -461,7 +486,7 @@ drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
 drop.addEventListener('drop',e=>{
   e.preventDefault();drop.classList.remove('drag');
   const f=e.dataTransfer.files[0];
-  if(f&&f.name.endsWith('.csv')){const dt=new DataTransfer();dt.items.add(f);const inp=drop.querySelector('input');inp.files=dt.files;handleCSV(inp);}
+  if(f&&(f.name.endsWith('.csv')||f.name.endsWith('.xlsx')||f.name.endsWith('.xls'))){const dt=new DataTransfer();dt.items.add(f);const inp=drop.querySelector('input');inp.files=dt.files;handleCSV(inp);}
 });
 function updateCacheNote(){
   const urls=activeInputTab==='url'?parseUrls(document.getElementById('url-textarea').value):csvUrls;
@@ -621,11 +646,11 @@ function renderLog(){
   }
   body.innerHTML=filtered.map(r=>{
     const badge=r.status==='flagged'?'<span class="badge badge-flagged">AI</span>':r.status==='clean'?'<span class="badge badge-clean">Clean</span>':r.status==='checking'?'<span class="badge badge-checking">…</span>':'<span class="badge badge-error">Error</span>';
-    const cachedBadge=r.fromCache?' <span class="badge badge-cached">cached</span>':'';
     const postDate=r.createTime?new Date(r.createTime*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
     const labelType=r.aigcLabelType==='1'?'Self-labeled':r.aigcLabelType==='2'?'Auto-detected':r.aigcLabelType==='0'?'—':'—';
+    const cachedCell=r.fromCache?'<span class="badge badge-cached">Yes</span>':'—';
     const shortUrl=(r.url||'').replace('https://www.tiktok.com','');
-    return '<div class="log-row"><div class="log-td">'+esc(r.handle||'—')+'</div><div class="log-td">'+esc(r.videoId||'—')+'</div><div class="log-td">'+badge+cachedBadge+'</div><div class="log-td" style="font-size:10px;">'+labelType+'</div><div class="log-td">'+postDate+'</div><div class="log-td"><a href="'+esc(r.url||'')+'" target="_blank" rel="noopener">'+esc(shortUrl)+'</a></div></div>';
+    return '<div class="log-row"><div class="log-td">'+esc(r.handle||'—')+'</div><div class="log-td">'+esc(r.videoId||'—')+'</div><div class="log-td">'+badge+'</div><div class="log-td" style="font-size:10px;">'+labelType+'</div><div class="log-td">'+postDate+'</div><div class="log-td"><a href="'+esc(r.url||'')+'" target="_blank" rel="noopener">'+esc(shortUrl)+'</a></div><div class="log-td">'+cachedCell+'</div></div>';
   }).join('');
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -642,8 +667,11 @@ function exportXLSX(){
   const ws1=XLSX.utils.aoa_to_sheet([fullHeaders,...fullRows]);
   ws1['!cols']=fullHeaders.map((_,i)=>({wch:[15,15,10,18,10,12,16,40,10,10,10,10,25,12,12,50][i]||15}));
   XLSX.utils.book_append_sheet(wb,ws1,'Full Report');
-  const flaggedHeaders=['Handle','Video ID'];
-  const flaggedRows=results.filter(r=>r.status==='flagged').map(r=>[r.handle||'',r.videoId||'']);
+  const flaggedHeaders=['Handle','Video ID','AI Label Type'];
+  const flaggedRows=results.filter(r=>r.status==='flagged').map(r=>{
+    const labelType=r.aigcLabelType==='1'?'Self-labeled (creator disclosed)':r.aigcLabelType==='2'?'Auto-detected (platform labeled)':'—';
+    return [r.handle||'',r.videoId||'',labelType];
+  });
   const ws2=XLSX.utils.aoa_to_sheet([flaggedHeaders,...flaggedRows]);
   ws2['!cols']=[{wch:20},{wch:22}];
   XLSX.utils.book_append_sheet(wb,ws2,'AI Flagged - Exclude List');
